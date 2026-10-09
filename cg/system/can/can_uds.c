@@ -82,19 +82,19 @@ static void prv_task_can_controller(void* canbus)
 	memset(prv_current_data, 0x00, 1760);
 
 	/* Turn on the CAN peripheral and set the baud rate. */
-	can_init(FDCAN1);
-	can_set_baud_rate(FDCAN1, CAN_BAUD_500K);
-	can_run(FDCAN1);
+	can_init(canbus);
+	can_set_baud_rate(canbus, CAN_BAUD_500K);
+	can_run(canbus);
 
 	/* Start the CAN transmitter task. */
-	assert( can_transmit_run(FDCAN1, 15) == pdPASS );
+	assert( can_transmit_run(canbus, 15) == pdPASS );
 
 	/* Create counting semaphores to count how many CAN messages have been receieved. */
 	prv_rx_fifo1_counter = xSemaphoreCreateCounting(64, 0);
 
 	/*Assign interrupt handler and enable new RX interrupt.*/
-	can_assign_rx_rf1n_cb(FDCAN1, prv_fifo1_int_handler);
-	can_enable_rx_rf1n_interrupt(FDCAN1);
+	can_assign_rx_rf1n_cb(canbus, prv_fifo1_int_handler);
+	can_enable_rx_rf1n_interrupt(canbus);
 
 	/* Create a filter to store SAE J1979 messages in fifo1. */
 	can_std_id_filter_t saej1979_std_filter;
@@ -102,14 +102,14 @@ static void prv_task_can_controller(void* canbus)
 	saej1979_std_filter.S0.bit.SFT = CAN_SFT_RANGE;
 	saej1979_std_filter.S0.bit.SFID1 = 0x7e0;
 	saej1979_std_filter.S0.bit.SFID2 = 0x7e8;
-	can_set_std_id_filter(FDCAN1, 0, &saej1979_std_filter);
+	can_set_std_id_filter(canbus, 0, &saej1979_std_filter);
 
 	can_ext_id_filter_t saej1979_ext_filter;
 	saej1979_ext_filter.F0.bit.EFEC = CAN_EFEC_STORE_FIFO1;
 	saej1979_ext_filter.F0.bit.EFID1 = 0x18DAF100;
 	saej1979_ext_filter.F1.bit.EFT = CAN_EFT_RANGE_NO_MSK;
 	saej1979_ext_filter.F1.bit.EFID2 = 0x18DAF1FF;
-	can_set_ext_id_filter(FDCAN1, 0, &saej1979_ext_filter);
+	can_set_ext_id_filter(canbus, 0, &saej1979_ext_filter);
 
 	/* Check for an ECU at CAN ID 0x7DF. */
 	if (prv_uds_ecu_present(0x7DF, CAN_ID_STD))
@@ -147,12 +147,12 @@ static void prv_task_can_controller(void* canbus)
 		if (xSemaphoreTake(prv_rx_fifo1_counter, pdMS_TO_TICKS(1000)) == pdTRUE)
 		{
 			can_rx_buffer_entry_t buf;
-			can_read_from_fifo1(FDCAN1, &buf);
+			can_read_from_fifo1(canbus, &buf);
 			prv_process_can_data(&buf);	
 		}
 	}
-	can_stop(FDCAN1);
-	can_deinit(FDCAN1);
+	can_stop(canbus);
+	can_deinit(canbus);
 	prv_task_handle = NULL;
 	xEventGroupSetBits(prv_event_group, EVENT_BITS_TASK_STOPPED);
 	vTaskDelete(NULL);
