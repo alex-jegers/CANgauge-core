@@ -26,40 +26,41 @@
  * lists based on CAN1_xxx_ID_FILTER_ADDR macro. Configures the buffer address pointers
  * to the RX and TX FIFOs. Clears interrupts.
  */
-void can_init(FDCAN_GlobalTypeDef* canbus);			
+void can_init();
 
 /**
- * can_deinit:
- * desc: disables interrupts. Turns off clocks, resets both peripheral blocks 
- * 		(FDCAN1 and 2). 
+ * @brief Disables interrupts. Turns off clocks, resets both peripheral blocks
+ * (FDCAN1 and 2).
  */
 void can_deinit();
+
 /**
- * can_stop:
- * desc: sets the INIT and CCE bits so the CAN registers can be modified.
+ * @brief Sets the INIT and CCE bits so the CAN registers can be modified.
  */
 void can_stop(FDCAN_GlobalTypeDef* canbus);
+
 /**
- * can_run: 
- * desc: clears the INIT and CCE bits locking CAN registers.
+ * @brief Clears the INIT and CCE bits locking CAN registers.
+ * @attention For some reason that I haven't been able to find in ST documentation
+ * FDCAN1 needs to be initialized for FDCAN2 to work after it gets initialized.
+ * After initializing FDCAN2, FDCAN1 can be uninitialized.
  */
-void can_run(FDCAN_GlobalTypeDef* canbus);
+void can_run();
+
 /**
- * can_set_baud_rate:
- * desc: sets the values of the NBTP registers, assumes a 48MHz kernel clock.
+ * @brief Sets the values of the NBTP registers, assumes a 48MHz kernel clock.
  */
 void can_set_baud_rate(FDCAN_GlobalTypeDef* canbus, can_baud_rate_t baud_rate);
+
 /**
- * can_get_baud_rate:
- * desc: samples the bus activity in listen only mode and will 
- *      return the baud rate assuming it's an option in can_baud_rate_t.
+ * @brief Samples the bus activity in listen only mode and will
+ * return the baud rate assuming it's an option in can_baud_rate_t.
  */
 can_baud_rate_t can_get_baud_rate(FDCAN_GlobalTypeDef* canbus);
 
 /**
- * can_get_last_error_code:
- * desc: returns whatever the last error code stored in the PSR register was.
- *      Saves it's state even after LEC has switched to NO_CHANGE.
+ * @brief Returns whatever the last error code stored in the PSR register was.
+ * Saves it's state even after LEC has switched to NO_CHANGE.
  */
 can_error_code_t can_get_last_error_code(FDCAN_GlobalTypeDef* canbus);
 
@@ -67,54 +68,68 @@ uint32_t can_get_rx_error_counter(FDCAN_GlobalTypeDef* canbus);
 uint32_t can_get_tx_error_counter(FDCAN_GlobalTypeDef* canbus);
 
 /**
- * can_add_tx_buffer:
- * desc: Adds a TX buffer entry to the CAN message RAM TX buffers.
- * params:
- *      canbus: Either FDCAN1 or FDCAN2.
- *      new_message: A pointer to the tx_buffer_entry_t that will be copied to message RAM.
- *      index: What index in message RAM to place the buffer (will overwrite previous data written to said index).
+ * @brief Adds a TX buffer entry to the CAN message RAM TX buffers.
+ * @param canbus Either FDCAN1 or FDCAN2.
+ * @param new_message A pointer to the tx_buffer_entry_t that will be copied to message RAM.
+ * @param index What index in message RAM to place the buffer (will overwrite previous data written to said index).
 **/
 int8_t can_add_tx_buffer(FDCAN_GlobalTypeDef* canbus, can_tx_buffer_entry_t* new_message, uint8_t index);
+
 /**
- * can_get_tx_buffer:
- * desc: returns a pointer to a TX buffer specified by index.
+ * @brief Returns a pointer to a TX buffer specified by index.
+ * @return A pointer to a TX buffer entry in CAN msg RAM memory.
  */
 can_tx_buffer_entry_t* can_get_tx_buffer(FDCAN_GlobalTypeDef* canbus, uint8_t index);
+
 /**
- * can_tx: 
- * desc: sets the TXBAR bit requesting a message be sent.
+ * @brief Sets the TXBAR bit requesting a message be sent.
  */
 void can_tx(FDCAN_GlobalTypeDef* canbus, uint8_t index);
 
 /**
- * can_check_for_rx_fifo0:
- * returns: true if there is a message(s) in FIFO0.
+ * @brief Checks if there are any unread messages in FIFO0.
+ * @return True if there is a message(s) in FIFO0.
  */
 bool can_check_for_rx_fifo0(FDCAN_GlobalTypeDef* canbus);
+
 /**
- * can_read_from_fifo0:
- * desc: copys the next message in the FIFO into the message param.
- * returns: the number of items remaining in the FIFO.
+ * @brief Copys the next message in the FIFO into the message param.
+ * @param canbus FDCAN1 or 2.
+ * @param message A pointer to a CAN RX buffer entry that the incoming message will be copied into.
+ * @returns The number of items remaining in the FIFO.
  */
 uint8_t can_read_from_fifo0(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* message);
 
 /**
- * can_check_for_rx_fifo1:
- * returns: true if there is a message(s) in FIFO1.
+ * @brief Checks if there are any unread messages in FIFO1.
+ * @return True if there is a message(s) in FIFO1.
  */
 bool can_check_for_rx_fifo1(FDCAN_GlobalTypeDef* canbus);
+
 /**
- * can_read_from_fifo1:
- * desc: copys the next message in the FIFO into the message param.
- * returns: the number of items remaining in the FIFO.
+ * @brief Copys the next message in the FIFO into the message param.
+ * @param canbus FDCAN1 or 2.
+ * @param message A pointer to a CAN RX buffer entry that the incoming message will be copied into.
+ * @returns The number of items remaining in the FIFO.
  */
 uint8_t can_read_from_fifo1(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* message);
 
+/**
+ * @brief You can't read the ID directly from the can_rx_buffer_entry_t bc it's shifted 17 bits if the
+ * ID is standard and not extended. This function takes care of that and will check if it's a std or xtd
+ * ID and do the shift if necessary and then return the ID.
+ * @param message The can_rx_buffer_entry_t to extract the CAN ID from.
+ * @return The CAN ID of the message.
+ */
 uint32_t can_get_can_id(can_rx_buffer_entry_t* message);
 
 /*Filter control*/
 void can_set_std_id_filter(FDCAN_GlobalTypeDef* canbus, uint8_t index, can_std_id_filter_t* filter);
-void can_set_ext_id_filter(FDCAN_GlobalTypeDef* canbus, uint8_t index, can_ext_id_filter_t* filter);		//returns 1 if list is full, 2 if ID is not a valid ID, 0 if no error.
+
+/**
+ * @brief Sets an extended filter by index. Will do nothing if the index is greater than the amount of filter elements.
+ */
+void can_set_ext_id_filter(FDCAN_GlobalTypeDef* canbus, uint8_t index, can_ext_id_filter_t* filter);
 
 
 void can_assign_rx_rf0n_cb(FDCAN_GlobalTypeDef* canbus, void (*func)());		//Assign a callback for a new message in FIFO 0 interrupt.
