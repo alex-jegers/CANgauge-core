@@ -123,7 +123,26 @@ uint8_t can_read_from_fifo1(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* 
  */
 uint32_t can_get_can_id(can_rx_buffer_entry_t* message);
 
-/*Filter control*/
+/**
+ * @brief Sets the data and data length code of a TX buffer.
+ * @param message Pointer to the TX buffer who's data and DLC we're setting.
+ * @param dlc The data length code (size of data_arr in bytes).
+ */
+void can_set_data(can_tx_buffer_entry_t* message, const uint8_t* data_arr, uint8_t dlc);
+
+/**
+ * @brief Sets the CAN ID of a TX message. You can't directly write the bits without shifting them
+ * if it's a standard ID so use this instead and you dont have to worry about shifting the bits.
+ * This function will set the ID and the ID type on it's own.
+ * @param message Pointer to the TX buffer entry who's ID to set.
+ * @param can_id The CAN ID, not shifted.
+ * @param id_type CAN_ID_STD or CAN_ID_XTD
+ */
+void can_set_can_id(can_tx_buffer_entry_t* message, uint32_t can_id, can_id_t id_type);
+
+/**
+ * @brief Sets a standard filter by index. Will do nothing if the index is greater than the amount of filter elements.
+ */
 void can_set_std_id_filter(FDCAN_GlobalTypeDef* canbus, uint8_t index, can_std_id_filter_t* filter);
 
 /**

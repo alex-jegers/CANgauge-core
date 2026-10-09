@@ -566,6 +566,29 @@ uint32_t can_get_can_id(can_rx_buffer_entry_t* message)
 	}
 }
 
+void can_set_can_id(can_tx_buffer_entry_t* message, uint32_t can_id, can_id_t id_type)
+{
+	if (id_type == CAN_ID_STD)
+	{
+		message->T0.bit.ID = can_id << 18;
+		message->T0.bit.XTD = 0;
+	}
+	else
+	{
+		message->T0.bit.ID = can_id;
+		message->T0.bit.XTD = 1;
+	}
+}
+
+void can_set_data(can_tx_buffer_entry_t* message, const uint8_t* data_arr, uint8_t dlc)
+{
+	for (uint8_t i = 0; i < dlc; i++)
+	{
+		message->data[i] = data_arr[i];
+	}
+	message->T1.bit.DLC = dlc;
+}
+
 can_error_code_t can_get_last_error_code(FDCAN_GlobalTypeDef* canbus)
 {
 	static can_error_code_t last_error_code = CAN_ERROR_CODE_NO_ERROR;	
