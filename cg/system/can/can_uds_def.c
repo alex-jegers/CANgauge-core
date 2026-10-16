@@ -32,6 +32,8 @@ const float c_to_f = 1.8;			//Only the scale needs to be adjusted because they'r
 const float kph_to_mph = 0.621371;
 const float nm_to_ftlbs = 0.737562;
 
+
+
 /*** Generated with current_data_array_generator_script.py. ***/
 static saej1979_current_data_t saej1979_mass_air_flow_nest_pid_0 = {.name = "Mass Air Flow A", .pid_code = 0x66, .scale = 0.03125, .offset = 0, .data_bytes = 2, .first_byte = 1,  .min = 0, .max = 2040, .units = g_per_s, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_mass_air_flow_nest_pid_1 = {.name = "Mass Air Flow B", .pid_code = 0x66, .scale = 0.03125, .offset = 0, .data_bytes = 2, .first_byte = 3,  .min = 0, .max = 2040, .units = g_per_s, .available = false, .nested = NULL};
@@ -299,14 +301,14 @@ static saej1979_current_data_t saej1979_current_data_pid_32 = {.name = "Availabl
 static saej1979_current_data_t saej1979_current_data_pid_33 = {.name = "Distance Traveled While MIL is Activated", .pid_code = 0x21, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_34 = {.name = "Fuel Pressure (relative to manifold)", .pid_code = 0x22, .scale = 0.079, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 5000, .units = kpa, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_35 = {.name = "Fuel Rail Pressure", .pid_code = 0x23, .scale = 10, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 655350, .units = kpa, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_36 = {.name = "Wideband AF Ratio B1 S1", .pid_code = 0x24, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_37 = {.name = "Wideband AF Ratio B1 S2", .pid_code = 0x25, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_38 = {.name = "Wideband AF Ratio B1 S3", .pid_code = 0x26, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_39 = {.name = "Wideband AF Ratio B1 S4", .pid_code = 0x27, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_40 = {.name = "Wideband AF Ratio B2 S1", .pid_code = 0x28, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_41 = {.name = "Wideband AF Ratio B2 S2", .pid_code = 0x29, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_42 = {.name = "Wideband AF Ratio B2 S3", .pid_code = 0x2A, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_43 = {.name = "Wideband AF Ratio B2 S4", .pid_code = 0x2B, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_36 = {.name = "Wideband AF Ratio B1 S1 (V)", .pid_code = 0x24, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_37 = {.name = "Wideband AF Ratio B1 S2 (V)", .pid_code = 0x25, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_38 = {.name = "Wideband AF Ratio B1 S3 (V)", .pid_code = 0x26, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_39 = {.name = "Wideband AF Ratio B1 S4 (V)", .pid_code = 0x27, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_40 = {.name = "Wideband AF Ratio B2 S1 (V)", .pid_code = 0x28, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_41 = {.name = "Wideband AF Ratio B2 S2 (V)", .pid_code = 0x29, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_42 = {.name = "Wideband AF Ratio B2 S3 (V)", .pid_code = 0x2A, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_43 = {.name = "Wideband AF Ratio B2 S4 (V)", .pid_code = 0x2B, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_44 = {.name = "Commanded EGR", .pid_code = 0x2C, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_45 = {.name = "EGR Error", .pid_code = 0x2D, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_46 = {.name = "Commanded Evaporative Purge", .pid_code = 0x2E, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
@@ -315,14 +317,14 @@ static saej1979_current_data_t saej1979_current_data_pid_48 = {.name = "Number o
 static saej1979_current_data_t saej1979_current_data_pid_49 = {.name = "Distance traveled since DTCs cleared", .pid_code = 0x31, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_50 = {.name = "Evap System Vapor Pressure", .pid_code = 0x32, .scale = 0, .offset = 0, .data_bytes = 0, .first_byte = 0,  .min = 0, .max = 0, .units = NULL, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_51 = {.name = "Barometric Pressure ", .pid_code = 0x33, .scale = 1, .offset = 0, .data_bytes = 1, .first_byte = 0,  .min = 75, .max = 110, .units = kpa, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_52 = {.name = "Wideband AF Ratio B1 S1", .pid_code = 0x34, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_53 = {.name = "Wideband AF Ratio B1 S2", .pid_code = 0x35, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_54 = {.name = "Wideband AF Ratio B1 S3", .pid_code = 0x36, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_55 = {.name = "Wideband AF Ratio B1 S4", .pid_code = 0x37, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_56 = {.name = "Wideband AF Ratio B2 S1", .pid_code = 0x38, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_57 = {.name = "Wideband AF Ratio B2 S2", .pid_code = 0x39, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_58 = {.name = "Wideband AF Ratio B2 S3", .pid_code = 0x3A, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
-static saej1979_current_data_t saej1979_current_data_pid_59 = {.name = "Wideband AF Ratio B2 S4", .pid_code = 0x3B, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_52 = {.name = "Wideband AF Ratio B1 S1 (A)", .pid_code = 0x34, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_53 = {.name = "Wideband AF Ratio B1 S2 (A)", .pid_code = 0x35, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_54 = {.name = "Wideband AF Ratio B1 S3 (A)", .pid_code = 0x36, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_55 = {.name = "Wideband AF Ratio B1 S4 (A)", .pid_code = 0x37, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_56 = {.name = "Wideband AF Ratio B2 S1 (A)", .pid_code = 0x38, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_57 = {.name = "Wideband AF Ratio B2 S2 (A)", .pid_code = 0x39, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_58 = {.name = "Wideband AF Ratio B2 S3 (A)", .pid_code = 0x3A, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
+static saej1979_current_data_t saej1979_current_data_pid_59 = {.name = "Wideband AF Ratio B2 S4 (A)", .pid_code = 0x3B, .scale = 3.05e-05, .offset = 0, .data_bytes = 2, .first_byte = 0,  .min = 0, .max = 2, .units = lambda, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_60 = {.name = "Catalyst Temp B1 S1", .pid_code = 0x3C, .scale = 0.1, .offset = -40, .data_bytes = 2, .first_byte = 0,  .min = -20, .max = 1000, .units = celsius, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_61 = {.name = "Catalyst Temp B2 S1", .pid_code = 0x3D, .scale = 0.1, .offset = -40, .data_bytes = 2, .first_byte = 0,  .min = -20, .max = 1000, .units = celsius, .available = false, .nested = NULL};
 static saej1979_current_data_t saej1979_current_data_pid_62 = {.name = "Catalyst Temp B1 S2", .pid_code = 0x3E, .scale = 0.1, .offset = -40, .data_bytes = 2, .first_byte = 0,  .min = -20, .max = 1000, .units = celsius, .available = false, .nested = NULL};
@@ -624,6 +626,8 @@ static saej1979_current_data_t* saej1979_current_data[179] = {
 
 
 /*** Generated with current_data_array_generator_script.py. ***/
+
+
 
 
 
