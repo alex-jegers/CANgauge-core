@@ -8,7 +8,7 @@
 #ifndef INC_STM32_exti_H_
 #define INC_STM32_exti_H_
 
-#include "stm32h745xx.h"
+#include <include/stm32h745xx.h>
 
 #define EXTI_EVENT_IO_PIN0                1 << 0
 #define EXTI_EVENT_IO_PIN1                1 << 1

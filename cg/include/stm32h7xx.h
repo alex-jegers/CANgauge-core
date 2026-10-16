@@ -130,7 +130,7 @@
 #elif defined(STM32H742xx)
   #include "stm32h742xx.h"
 #elif defined(STM32H745xx)
-  #include "stm32h745xx.h"
+  #include <include/stm32h745xx.h>
 #elif defined(STM32H745xG)
   #include "stm32h745xg.h"
 #elif defined(STM32H755xx)
