@@ -8,7 +8,7 @@
 #ifndef DRIVERS_STM32_TIMER_H_
 #define DRIVERS_STM32_TIMER_H_
 
-#include <include/stm32h745xx.h>
+#include "stm32h745xx.h"
 
 void timer_ms_inc(uint32_t time_in_ms);
 uint32_t timer_get_time_ms();

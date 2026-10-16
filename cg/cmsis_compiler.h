@@ -51,7 +51,7 @@
  * GNU Compiler
  */
 #elif defined ( __GNUC__ )
-  #include <include/cmsis_gcc.h>
+  #include "cmsis_gcc.h"
 
 
 /*

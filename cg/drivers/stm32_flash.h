@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 /**********     INCLUDES        **********/
-#include <include/stm32h745xx.h>
+#include "stm32h745xx.h"
 #include <stdbool.h>
 #include "system/system_mem.h"
 /**********     DEFINES      **********/
