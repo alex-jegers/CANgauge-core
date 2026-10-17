@@ -15,10 +15,10 @@ extern "C" {
 /**********     GLOBAL VARIABLE DECLRATIONS     **********/
 
 /**********		GLOBAL FUNCTION DECLRATIONS		**********/
-SYS_MEM_REGION_RAM_EXE bool flash_b2_unlock();
-SYS_MEM_REGION_RAM_EXE void flash_b2_enable_write();
-SYS_MEM_REGION_RAM_EXE void flash_b2_disable_write();
-SYS_MEM_REGION_RAM_EXE void flash_b2_lock();
+bool flash_b2_unlock();
+void flash_b2_enable_write();
+void flash_b2_disable_write();
+void flash_b2_lock();
 
 /**
  * flash_b2_erase:
@@ -28,7 +28,7 @@ SYS_MEM_REGION_RAM_EXE void flash_b2_lock();
  * returns:
  * false if sector is greater than 7.
  */
-SYS_MEM_REGION_RAM_EXE  bool flash_b2_erase(uint8_t sector);
+bool flash_b2_erase(uint8_t sector);
 
 /**
  * flash_b2_qw_status:
@@ -36,13 +36,13 @@ SYS_MEM_REGION_RAM_EXE  bool flash_b2_erase(uint8_t sector);
  * true: if the QW bit in flash_sr2 is set.
  * false: if the QW bit in flash_sr2 is not set.
  */
-SYS_MEM_REGION_RAM_EXE bool flash_b2_qw_status();
-SYS_MEM_REGION_RAM_EXE void flash_b2_force_write();
+bool flash_b2_qw_status();
+void flash_b2_force_write();
 
-SYS_MEM_REGION_RAM_EXE bool flash_b1_unlock();
-SYS_MEM_REGION_RAM_EXE void flash_b1_enable_write();
-SYS_MEM_REGION_RAM_EXE void flash_b1_disable_write();
-SYS_MEM_REGION_RAM_EXE void flash_b1_lock();
+bool flash_b1_unlock();
+void flash_b1_enable_write();
+void flash_b1_disable_write();
+void flash_b1_lock();
 
 /**
  * flash_b1_erase:
@@ -52,7 +52,7 @@ SYS_MEM_REGION_RAM_EXE void flash_b1_lock();
  * returns:
  * false if sector is greater than 7.
  */
-SYS_MEM_REGION_RAM_EXE bool flash_b1_erase(uint8_t sector);
+bool flash_b1_erase(uint8_t sector);
 
 /**
  * flash_b1_qw_status:
@@ -60,8 +60,8 @@ SYS_MEM_REGION_RAM_EXE bool flash_b1_erase(uint8_t sector);
  * true: if the QW bit in flash_sr1 is set.
  * false: if the QW bit in flash_sr1 is not set.
  */
-SYS_MEM_REGION_RAM_EXE bool flash_b1_qw_status();
-SYS_MEM_REGION_RAM_EXE void flash_b1_force_write();
+bool flash_b1_qw_status();
+void flash_b1_force_write();
 
 
 

@@ -118,7 +118,7 @@ FRESULT sys_mem_init_eeprom_fs()
 	}
 }
 
-SYS_MEM_REGION_RAM_EXE void sys_mem_flash_write_sector(uint8_t sector, void* src)
+void sys_mem_flash_write_sector(uint8_t sector, void* src)
 {
     /* Bank start address. */
     uint32_t sector_saddr = (sector * 0x20000) + 0x08000000;
