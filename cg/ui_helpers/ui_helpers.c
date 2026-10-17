@@ -306,7 +306,7 @@ lv_obj_t* ui_helpers_show_loading_wheel(lv_obj_t* parent, const char* msg)
 {
 	if (parent == NULL)
 	{
-		parent = lv_screen_active();
+		parent = lv_layer_top();
 	}
 	lv_obj_t* container = lv_obj_create(parent);
 	lv_obj_set_size(container, 250, 250);
