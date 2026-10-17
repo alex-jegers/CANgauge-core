@@ -91,6 +91,57 @@ lv_obj_t* ui_helpers_create_checkbox_with_text(lv_obj_t* parent, const char* tex
 #endif //LV_USE_CHECKBOX
 
 #if LV_USE_SCALE
+lv_obj_t* ui_helpers_create_gauge_new(lv_obj_t* parent, uint32_t total_tick_count, uint32_t major_tick_increment, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
+{
+	uint32_t min_val = 0;
+	uint32_t max_val = total_tick_count;
+	lv_obj_t* temp_gauge = lv_scale_create(parent);
+	lv_obj_set_size(temp_gauge, 410, 410);
+	lv_obj_align(temp_gauge, LV_ALIGN_CENTER, 0, 0);
+	lv_scale_set_mode(temp_gauge, LV_SCALE_MODE_ROUND_INNER);
+	lv_scale_set_label_show(temp_gauge, true);
+	lv_scale_set_total_tick_count(temp_gauge, total_tick_count);
+	lv_scale_set_major_tick_every(temp_gauge, major_tick_increment);
+	lv_scale_set_range(temp_gauge, min_val, max_val);
+	
+	/*Main arc style.*/
+	lv_obj_set_style_arc_color(temp_gauge, UI_COLOR_WHITE, LV_PART_MAIN);
+	lv_obj_set_style_arc_width(temp_gauge, 0, LV_PART_MAIN);
+	
+	/*Major tick marks and labels.*/
+	lv_obj_set_style_line_color(temp_gauge, UI_COLOR_WHITE, LV_PART_INDICATOR);
+	lv_obj_set_style_text_color(temp_gauge, UI_COLOR_WHITE, LV_PART_INDICATOR);
+	lv_obj_set_style_length(temp_gauge, 22, LV_PART_INDICATOR);
+	lv_obj_set_style_line_width(temp_gauge, 8, LV_PART_INDICATOR);
+	lv_obj_set_style_line_rounded(temp_gauge, true, LV_PART_INDICATOR);
+	lv_obj_set_style_translate_x(temp_gauge, -20, LV_PART_INDICATOR);
+	lv_obj_set_style_text_font(temp_gauge, &lv_font_montserrat_26, LV_PART_INDICATOR);
+	
+	/*Minor tick marks.*/
+	lv_scale_set_range(temp_gauge, min_val, max_val - 1);
+	lv_obj_set_style_line_color(temp_gauge, UI_COLOR_WHITE, LV_PART_ITEMS);
+	lv_obj_set_style_text_color(temp_gauge, UI_COLOR_WHITE, LV_PART_ITEMS);
+	lv_obj_set_style_length(temp_gauge, 15, LV_PART_ITEMS);
+	lv_obj_set_style_line_width(temp_gauge, 4, LV_PART_ITEMS);
+	lv_obj_set_style_line_rounded(temp_gauge, true, LV_PART_ITEMS);
+	
+	/*Scale rotation.*/
+	lv_scale_set_angle_range(temp_gauge, angle_range);
+	lv_scale_set_rotation(temp_gauge, angle_rotation);
+	
+	/*Needle, if were using one.*/
+	if (needle != NULL)
+	{
+	    /* Create the needle. */
+	    *needle = lv_line_create(temp_gauge);
+	    lv_obj_set_style_line_width(*needle, 8, LV_PART_MAIN);
+	    lv_obj_set_style_line_color(*needle, UI_COLOR_RED, LV_PART_MAIN);
+	    lv_scale_set_line_needle_value(temp_gauge, *needle, 200, min_val);
+	}
+	return temp_gauge;
+	
+}
+
 lv_obj_t* ui_helpers_create_gauge(lv_obj_t* parent, int32_t min_val, int32_t max_val, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
 {
 	uint32_t total_tick_count = abs(max_val - min_val);
