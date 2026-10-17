@@ -141,7 +141,7 @@ SYS_MEM_REGION_RAM_EXE void sys_mem_flash_write_sector(uint8_t sector, void* src
 	else
 	{
 		flash_b2_unlock();
-		flash_b2_erase(sector);
+		flash_b2_erase(sector - 8);
 		while (flash_b2_qw_status()) {}
 		flash_b2_enable_write();
 		for (uint32_t i = 0; i < 0x20000; i+= 0x20)
