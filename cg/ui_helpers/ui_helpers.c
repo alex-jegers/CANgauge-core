@@ -91,7 +91,7 @@ lv_obj_t* ui_helpers_create_checkbox_with_text(lv_obj_t* parent, const char* tex
 #endif //LV_USE_CHECKBOX
 
 #if LV_USE_SCALE
-lv_obj_t* ui_helpers_create_gauge_new(lv_obj_t* parent, uint32_t total_tick_count, uint32_t major_tick_increment, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
+lv_obj_t* ui_helpers_create_gauge(lv_obj_t* parent, uint32_t total_tick_count, uint32_t major_tick_increment, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
 {
 	uint32_t min_val = 0;
 	uint32_t max_val = total_tick_count;
@@ -142,7 +142,7 @@ lv_obj_t* ui_helpers_create_gauge_new(lv_obj_t* parent, uint32_t total_tick_coun
 	
 }
 
-lv_obj_t* ui_helpers_create_gauge(lv_obj_t* parent, int32_t min_val, int32_t max_val, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
+lv_obj_t* ui_helpers_create_gauge_old(lv_obj_t* parent, int32_t min_val, int32_t max_val, uint32_t angle_range, uint32_t angle_rotation, lv_obj_t** needle)
 {
 	uint32_t total_tick_count = abs(max_val - min_val);
 
