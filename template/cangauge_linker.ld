@@ -15,7 +15,7 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
   RAM_D1 (rw)   	: ORIGIN = 0x24000000, LENGTH = 0x80000		/* One LCD frame buffer, AXI RAM. */
-  FLASH  (rx)    	: ORIGIN = 0x08000000, LENGTH = 0x200000   	/* Program memory. The last 384k is reserved for the bootloader. */
+  FLASH  (rx)    	: ORIGIN = 0x08000000, LENGTH = 0x1A0000   	/* Program memory. The last 384k is reserved for the bootloader. */
   DTCMRAM (rw)  	: ORIGIN = 0x20000000, LENGTH = 0x20000		/* Stack. */
   RAM_D2 (rw)   	: ORIGIN = 0x30000000, LENGTH = 0x48000		/* Data section, SRAM1,2,3 combined (LVGL and FreeRTOS heap). */
   RAM_D3 (rw)   	: ORIGIN = 0x38000000, LENGTH = 0x10000		/* SRAM 4. */		
