@@ -72,6 +72,11 @@ extern "C" {
  */
 #include "drivers/drivers.h"
 
+/**
+ * Example programs.
+ */
+#include "examples/examples.h"
+
 /**********     TYPEDEFS         **********/
 
 /**********     DEFINES      **********/
