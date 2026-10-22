@@ -21,7 +21,14 @@ extern "C" {
 
 /**********		GLOBAL FUNCTION DECLRATIONS		**********/
 /**
- * @brief
+ * @brief Initializes the UI and the CAN for a shift light. Sets the CAN UDS query.
+ * Call this in application_task initialization section.
+ */
+void shift_light_example_init();
+
+/**
+ * @brief The shift light application. Call this in the task loop with a 15-30ms delay.
+ *
  */
 void shift_light_example_run();
 
