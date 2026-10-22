@@ -153,7 +153,7 @@
 /* configQUEUE_REGISTRY_SIZE sets the maximum number of queues and semaphores
  * that can be referenced from the queue registry.  Only required when using a
  * kernel aware debugger.  Defaults to 0 if left undefined. */
-#define configQUEUE_REGISTRY_SIZE                  0
+#define configQUEUE_REGISTRY_SIZE                  10
 
 /* Set configENABLE_BACKWARD_COMPATIBILITY to 1 to map function names and
  * datatypes from old version of FreeRTOS to their latest equivalent.  Defaults
