@@ -7,8 +7,9 @@ extern "C" {
 #endif
 
 /**********     INCLUDES        **********/
-#include "cangauge.h"
 #include "can_uds_def.h"
+#include "stdbool.h"
+#include "stdint.h"
 /**********     DEFINES      **********/
 
 /**********     GLOBAL VARIABLE DECLRATIONS     **********/

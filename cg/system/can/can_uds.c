@@ -1,6 +1,10 @@
 /**********     INCLUDES        **********/
 #include "can_uds.h"
 #include "can_transmitter.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "event_groups.h"
+#include "semphr.h"
 #include <stdio.h>				//For sprintf.
 #include <string.h>				//For memcpy.
 #include <stdbool.h>
