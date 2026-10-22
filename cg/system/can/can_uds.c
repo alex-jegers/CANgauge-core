@@ -403,13 +403,13 @@ static void prv_get_extra_pids(uint8_t pid)
 		can_read_from_fifo1(FDCAN1, &rx_buf);
 		prv_process_can_data(&rx_buf);
 
-		saej1979_current_data_t* x = saej1979_get_current_data_lut_by_pid(pid);
+		can_uds_current_data_t* x = can_uds_get_current_data_by_pid(pid);
 		uint8_t bit_mask = can_uds_get_raw_current_data(pid, 0, 1);
 		for (uint8_t i = 0; i < 8; i++)
 		{
 			if ((1 << i) & bit_mask)
 			{
-				saej1979_current_data_t* y = x->nested[i];
+				can_uds_current_data_t* y = x->nested[i];
 				if (y != NULL) { y->available = true; }
 			}
 		}
@@ -428,7 +428,7 @@ static bool prv_update_available_uds_data()
 		for (int8_t i = 31; i >= 0; i--)
 		{
 			uint8_t this_pid = 32 - i + x;
-			saej1979_current_data_t* y = saej1979_get_current_data_lut_by_pid(this_pid);
+			can_uds_current_data_t* y = can_uds_get_current_data_by_pid(this_pid);
 			/* Check if the bit is set in the available PIDs bitmask. */
 			if ((available_pids_1 & (1 << i)) != 0)
 			{

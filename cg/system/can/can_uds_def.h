@@ -14,8 +14,8 @@ extern "C" {
 /**********     DEFINES      **********/
 
 /**********     TYPEDEFS        **********/
-typedef struct saej1979_current_data_t saej1979_current_data_t;
-struct saej1979_current_data_t
+typedef struct can_uds_current_data_t can_uds_current_data_t;
+struct can_uds_current_data_t
 {
     const char* name;                     //For debugging and easier readability.
     const uint8_t pid_code;
@@ -27,7 +27,7 @@ struct saej1979_current_data_t
     int32_t max;
     const char* units;
     bool available;
-    saej1979_current_data_t** nested;      //Pointer to the nested data array. NULL if not a nested PID.
+    can_uds_current_data_t** nested;      //Pointer to the nested data array. NULL if not a nested PID.
 };
 
 /**********     GLOBAL VARIABLE DECLRATIONS     **********/
@@ -43,18 +43,47 @@ struct saej1979_current_data_t
 bool can_uds_set_current_data_query(uint8_t pid1, uint8_t pid2, uint8_t pid3, uint8_t pid4);
 
 /** 
- * Returns a value that can be sent to the UI. 
+ * @brief Returns the raw value of a PID given the CAN message.
  * If it's not a valid SAE J1979 Service 01 response CAN frame returns 0.
 */
 int32_t can_uds_process_raw_data(can_rx_buffer_entry_t* input);
 
-/** saej1979_get_current_data_lut_by_pid
- * 		desc: Returns a current data LUT element. The LUT includes info like the scale and offset needed
- * 			to be applied to the raw data, which position the first byte is in, how many data bytes to
- * 			include, etc.
+/**
+ * @brief Returns the processed value for a PID given the can_uds_current_data_t struct.
+ * Uses the last raw value received.
  */
-saej1979_current_data_t* saej1979_get_current_data_lut_by_pid(uint8_t pid);
+float can_uds_get_processed_current_data(can_uds_current_data_t* data);
 
+/**
+ * @brief Returns a current data LUT element. The LUT includes info like the scale and offset needed
+ * to be applied to the raw data, which position the first byte is in, how many data bytes to
+ * include, etc. This will never directly return a nested element.
+ * @returns A pointer to a saej1979_current_data_t element.
+ */
+can_uds_current_data_t* can_uds_get_current_data_by_pid(uint8_t pid);
+
+/**
+ * @brief Returns a current data LUT element. The LUT includes info like the scale and offset needed
+ * to be applied to the raw data, which position the first byte is in, how many data bytes to
+ * include, etc. Searching by name will check the nested elements as well.
+ * @param name The name of the data element being searched for.
+ * @returns A pointer to a saej1979_current_data_t element. Returns NULL if the data element with
+ * name 'name' couldnt be found.
+ */
+can_uds_current_data_t* can_uds_get_current_data_by_name(const char* name);
+
+/**
+ * @brief Check if a saej1979_current_data_t has been marked as available or not. Available
+ * means the car supports this PID.
+ * @returns True if the car supports this PID, false if it does not. Return value only valid
+ * after CAN UDS has been successfully initialized with can_uds_run and verified with can_uds_is_init.
+ */
+bool can_uds_get_current_data_availability(can_uds_current_data_t* data);
+
+/**
+ * @returns The PID of a current data struct.
+ */
+uint8_t can_uds_get_current_data_pid(can_uds_current_data_t* data);
 
 #ifdef __cplusplus
 } /*extern "C"*/
