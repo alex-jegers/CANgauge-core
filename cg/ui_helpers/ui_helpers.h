@@ -24,6 +24,7 @@ extern "C" {
 #else
 
 #define UI_COLOR_RED		lv_color_hex(0xdb1616)
+#define UI_COLOR_GREEN		lv_color_hex(0x21e90c)
 #define UI_COLOR_LIGHT_RED	lv_color_hex(0xdbc1c1)
 #define UI_COLOR_DARK_RED	lv_color_hex(0x4a0404)
 #define UI_COLOR_WHITE		lv_color_hex(0xfafafa)
