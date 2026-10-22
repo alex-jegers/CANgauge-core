@@ -511,7 +511,7 @@ static void prv_get_vin()
 }
 
 /**********		GLOBAL FUNCTION DEFINITIONS		**********/
-BaseType_t can_uds_run(uint8_t (*data_storage)[176][10])
+bool can_uds_run()
 {
 	/* Check if the task already exists and do nothing if it does. */
 	if (prv_task_handle != NULL)
@@ -528,8 +528,15 @@ BaseType_t can_uds_run(uint8_t (*data_storage)[176][10])
 											| EVENT_BITS_INIT_DONE);
 
 	/* Create the task. */
-	return xTaskCreate(prv_task_can_controller, "CAN_CONTROLLER", 1000 / 4, FDCAN1, 3, &prv_task_handle);
-	
+	BaseType_t val = xTaskCreate(prv_task_can_controller, "CAN_CONTROLLER", 1000 / 4, FDCAN1, 3, &prv_task_handle);
+	if (val == pdPASS)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 bool can_uds_stop(uint32_t block_time_ms)
@@ -575,12 +582,12 @@ bool app_can_sniffer_running()
 	return prv_task_run;
 }
 
-bool app_can_controller_is_init(uint32_t block_time_ms )
+bool can_uds_is_init(uint32_t block_time_ms )
 {
 	uint32_t rtn = xEventGroupWaitBits(prv_event_group, EVENT_BITS_INIT_DONE,
 										pdFALSE,		//Clear on exit.
 										pdTRUE,			//Wait for all.
-										block_time_ms);	//Block time.
+										pdMS_TO_TICKS(block_time_ms));	//Block time.
 	return rtn & EVENT_BITS_INIT_DONE;
 }
 
