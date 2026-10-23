@@ -366,7 +366,7 @@ can_baud_rate_t can_get_baud_rate(FDCAN_GlobalTypeDef* canbus)
 											CAN_BAUD_250K,
 											CAN_BAUD_125K };
 
-
+	can_init();
 	for (uint32_t i = 0; i < 4; i++)
 	{
 		can_stop(canbus);
@@ -401,6 +401,7 @@ can_baud_rate_t can_get_baud_rate(FDCAN_GlobalTypeDef* canbus)
 	}
 	can_stop(canbus);							//disable CAN.
 	can_clear_listen_only(canbus);
+	can_deinit();
 	return CAN_BAUD_ERROR;
 
 }
