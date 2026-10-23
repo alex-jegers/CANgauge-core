@@ -1,5 +1,4 @@
 /**********     INCLUDES        **********/
-#include "can_uds.h"
 #include "can_transmitter.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -8,6 +7,7 @@
 #include <stdio.h>				//For sprintf.
 #include <string.h>				//For memcpy.
 #include <stdbool.h>
+#include <system/can/can_obd.h>
 
 /**********		DEFINES		**********/
 #define EVENT_BITS_TASK_STOPPED			0x1 << 0
@@ -54,7 +54,7 @@ static uds_service_type_t prv_flow_ctrl_last_service = UDS_SERVICE_TYPE_INVALID;
 
 static can_transmit_handle_t* prv_current_data_query[4] = { NULL, NULL, NULL, NULL };		//Holds pointers to the data currently being transmitted (up to 4 parameters at a time).
 /**********		STATIC FUNCTION DECLRATIONS		**********/
-static void prv_task_can_controller();
+static void prv_task_can_obd();
 static pci_flow_ctrl_t prv_process_can_data(can_rx_buffer_entry_t* buf);
 /**
  * prv_get_available_pids:
@@ -80,7 +80,7 @@ static void prv_get_vin();
 
 /**********		STATIC FUNCTION DEFINITIONS		**********/
 
-static void prv_task_can_controller(void* canbus)
+static void prv_task_can_obd(void* canbus)
 {
 	/* Zero out the CAN data array, this is where incoming raw data is stored. */
 	memset(prv_current_data, 0x00, 1760);
@@ -403,13 +403,13 @@ static void prv_get_extra_pids(uint8_t pid)
 		can_read_from_fifo1(FDCAN1, &rx_buf);
 		prv_process_can_data(&rx_buf);
 
-		can_uds_current_data_t* x = can_uds_get_current_data_by_pid(pid);
-		uint8_t bit_mask = can_uds_get_raw_current_data(pid, 0, 1);
+		can_obd_current_data_t* x = can_obd_get_current_data_by_pid(pid);
+		uint8_t bit_mask = can_obd_get_raw_current_data(pid, 0, 1);
 		for (uint8_t i = 0; i < 8; i++)
 		{
 			if ((1 << i) & bit_mask)
 			{
-				can_uds_current_data_t* y = x->nested[i];
+				can_obd_current_data_t* y = x->nested[i];
 				if (y != NULL) { y->available = true; }
 			}
 		}
@@ -424,11 +424,11 @@ static bool prv_update_available_uds_data()
 	/* Check the available PID parameters (0x00, 0x20, 0x40, 0x60, 0x80.) */
 	for (uint8_t x = 0; x < 0x80; x += 0x20)
 	{
-		uint32_t available_pids_1 = can_uds_get_raw_current_data(x, 0, 4);
+		uint32_t available_pids_1 = can_obd_get_raw_current_data(x, 0, 4);
 		for (int8_t i = 31; i >= 0; i--)
 		{
 			uint8_t this_pid = 32 - i + x;
-			can_uds_current_data_t* y = can_uds_get_current_data_by_pid(this_pid);
+			can_obd_current_data_t* y = can_obd_get_current_data_by_pid(this_pid);
 			/* Check if the bit is set in the available PIDs bitmask. */
 			if ((available_pids_1 & (1 << i)) != 0)
 			{
@@ -511,7 +511,7 @@ static void prv_get_vin()
 }
 
 /**********		GLOBAL FUNCTION DEFINITIONS		**********/
-bool can_uds_run()
+bool can_obd_run()
 {
 	/* Check if the task already exists and do nothing if it does. */
 	if (prv_task_handle != NULL)
@@ -528,7 +528,7 @@ bool can_uds_run()
 											| EVENT_BITS_INIT_DONE);
 
 	/* Create the task. */
-	BaseType_t val = xTaskCreate(prv_task_can_controller, "CAN_CONTROLLER", 1000 / 4, FDCAN1, 3, &prv_task_handle);
+	BaseType_t val = xTaskCreate(prv_task_can_obd, "CAN_OBD", 1000 / 4, FDCAN1, 3, &prv_task_handle);
 	if (val == pdPASS)
 	{
 		return true;
@@ -539,7 +539,7 @@ bool can_uds_run()
 	}
 }
 
-bool can_uds_stop(uint32_t block_time_ms)
+bool can_obd_stop(uint32_t block_time_ms)
 {
     prv_task_run = false;
 
@@ -557,7 +557,7 @@ bool can_uds_stop(uint32_t block_time_ms)
     return rtn & EVENT_BITS_TASK_STOPPED;
 }
 
-uint32_t can_uds_get_raw_current_data(uint8_t pid, uint8_t first_byte, uint8_t num_params)
+uint32_t can_obd_get_raw_current_data(uint8_t pid, uint8_t first_byte, uint8_t num_params)
 {
 	uint32_t raw_value = 0;
 	for (uint8_t i = 0; i < num_params; i++)
@@ -567,7 +567,7 @@ uint32_t can_uds_get_raw_current_data(uint8_t pid, uint8_t first_byte, uint8_t n
 	return raw_value;
 }
 
-uint32_t can_uds_get_raw_infotype_data(uint8_t pid, uint8_t first_byte, uint8_t num_params)
+uint32_t can_obd_get_raw_infotype_data(uint8_t pid, uint8_t first_byte, uint8_t num_params)
 {
 	uint32_t raw_value = 0;
 	for (uint8_t i = 0; i < num_params; i++)
@@ -582,7 +582,7 @@ bool app_can_sniffer_running()
 	return prv_task_run;
 }
 
-bool can_uds_is_init(uint32_t block_time_ms )
+bool can_obd_is_init(uint32_t block_time_ms )
 {
 	uint32_t rtn = xEventGroupWaitBits(prv_event_group, EVENT_BITS_INIT_DONE,
 										pdFALSE,		//Clear on exit.
@@ -591,17 +591,17 @@ bool can_uds_is_init(uint32_t block_time_ms )
 	return rtn & EVENT_BITS_INIT_DONE;
 }
 
-uint32_t can_uds_get_query_can_id()
+uint32_t can_obd_get_query_can_id()
 {
 	return prv_query_can_id;
 }
 
-uint32_t can_uds_get_response_can_id()
+uint32_t can_obd_get_response_can_id()
 {
 	return prv_response_can_id;
 }
 
-bool can_uds_set_current_data_query(uint8_t pid1, uint8_t pid2, uint8_t pid3, uint8_t pid4)
+bool can_obd_set_current_data_query(uint8_t pid1, uint8_t pid2, uint8_t pid3, uint8_t pid4)
 {
 	bool rtn_val = false;
 	/* Data byte 2 needs to be changed depending on the data being requested. */
@@ -682,7 +682,7 @@ bool can_uds_set_current_data_query(uint8_t pid1, uint8_t pid2, uint8_t pid3, ui
 	return rtn_val;
 }
 
-void can_uds_stop_query()
+void can_obd_stop_query()
 {
 	/* Stop transmitting the requestor on CAN. */
 	can_transmit_set_inactive(prv_current_data_query[0]);

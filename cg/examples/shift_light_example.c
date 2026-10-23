@@ -3,8 +3,6 @@
 #include "cangauge.h"
 #include "math.h"
 
-/**********     TYPEDEFS         **********/
-
 /**********		DEFINES		**********/
 #define PRV_NUM_LEDS			9
 #define PRV_SPAN_DEGREES		240.0
@@ -13,12 +11,9 @@
 #define PRV_LED_SIZE			45
 #define PRV_SHIFT_POINT_RPM		6000
 
-/**********		EXTERNAL VARIABLE DEFINITIONS		**********/
-
 /**********		STATIC VARIABLES		**********/
-static lv_obj_t* prv_main_scr;
-static lv_obj_t* prv_leds[PRV_NUM_LEDS];
-static lv_obj_t* prv_rpm_lbl;
+static lv_obj_t* prv_leds[PRV_NUM_LEDS];	//An array of LEDs, at a quantity defined by a constant.
+static lv_obj_t* prv_rpm_lbl;				//A label to display the RPM.
 
 /**********		STATIC FUNCTION DECLRATIONS		**********/
 static void prv_set_led_color(uint8_t led_index, lv_color_t color);
@@ -61,7 +56,7 @@ void shift_light_example_init()
 {
 	/* Create the LVGL parent object. */
 	lv_port_take_lvgl_mutex(portMAX_DELAY);
-	prv_main_scr = lv_obj_create(NULL);
+	lv_obj_t* prv_main_scr = lv_obj_create(NULL);
 	lv_obj_set_size(prv_main_scr, 480, 480);
 	lv_obj_set_style_bg_color(prv_main_scr, UI_COLOR_BLACK, 0);
 	lv_obj_remove_flag(prv_main_scr, LV_OBJ_FLAG_SCROLLABLE);
@@ -79,13 +74,8 @@ void shift_light_example_init()
 		y_pos *= -1.0;
 		lv_obj_align(prv_leds[i], LV_ALIGN_CENTER, (int32_t)x_pos, (int32_t)y_pos);
 	}
-	lv_port_give_lvgl_mutex();
-
-	/* Set the colors of the LEDs. */
-	prv_set_led_default_colors();
 
 	/* Make a label to display the RPM and a label for the units. */
-	lv_port_take_lvgl_mutex(portMAX_DELAY);
 	prv_rpm_lbl = lv_label_create(prv_main_scr);
 	lv_obj_t* units_lbl = lv_label_create(prv_main_scr);
 	lv_obj_set_style_text_color(prv_rpm_lbl, UI_COLOR_WHITE, 0);
@@ -104,18 +94,29 @@ void shift_light_example_init()
 
 	lv_port_give_lvgl_mutex();
 
-	/* Setting up CAN and UDS (unified diagnostic service). */
-	can_uds_run();					//Start the CAN UDS task.
+	/* Set the colors of the LEDs. */
+	prv_set_led_color(0, UI_COLOR_BLUE);
+	prv_set_led_color(1, UI_COLOR_BLUE);
+	prv_set_led_color(2, UI_COLOR_BLUE);
+	prv_set_led_color(3, UI_COLOR_GREEN);
+	prv_set_led_color(4, UI_COLOR_GREEN);
+	prv_set_led_color(5, UI_COLOR_GREEN);
+	prv_set_led_color(6, UI_COLOR_RED);
+	prv_set_led_color(7, UI_COLOR_RED);
+	prv_set_led_color(8, UI_COLOR_RED);
+
+	/* Setting up CAN for OBD diagnostics. */
+	can_obd_run();					//Start the CAN OBD task
 
 	/* Wait up to 10 seconds for it to initialize. */
-	if (!can_uds_is_init(10000))
+	if (!can_obd_is_init(10000))
 	{
-		error_show_msgbox("Failed to initialize CAN UDS.");	//Show an error message if it times out.
+		error_show_msgbox("Failed to initialize CAN on OBDII.");	//Show an error message if it times out.
 		return;
 	}
 
 
-	uint32_t can_id = can_uds_get_query_can_id();	//Check if it found a UDS network.
+	uint32_t can_id = can_obd_get_query_can_id();	//Check if it found a UDS network.
 	if (can_id == 0x00)
 	{
 		error_show_msgbox("No vehicle found.");		//Show an error message if it didn't
@@ -128,7 +129,7 @@ void shift_light_example_init()
 	 *
 	 * We get the current data struct for RPM like this:
 	 */
-	can_uds_current_data_t* rpm_data = can_uds_get_current_data_by_name("Engine RPM");
+	can_obd_current_data_t* rpm_data = can_obd_get_current_data_by_name("Engine RPM");
 
 	if (rpm_data == NULL)	//NULL check, make sure the name wasnt misspelled or something.
 	{
@@ -137,7 +138,7 @@ void shift_light_example_init()
 	}
 
 	/* Checking if it's available will tell us if the car supports this data or not. */
-	if (can_uds_get_current_data_availability(rpm_data) == false)
+	if (can_obd_get_current_data_availability(rpm_data) == false)
 	{
 		error_show_msgbox("RPM data not available.");
 		return;
@@ -147,15 +148,15 @@ void shift_light_example_init()
 	 * We can set the query to continually poll the car for RPM data like so (this will ask the
 	 * car for RPM data every 15ms):
 	 */
-	uint8_t rpm_pid = can_uds_get_current_data_pid(rpm_data);
-	can_uds_set_current_data_query(rpm_pid, 0, 0, 0);
+	uint8_t rpm_pid = can_obd_get_current_data_pid(rpm_data);
+	can_obd_set_current_data_query(rpm_pid, 0, 0, 0);
 }
 
 void shift_light_example_run()
 {
 	/* Get the latest RPM data. */
-	can_uds_current_data_t* rpm_data = can_uds_get_current_data_by_name("Engine RPM");
-	float rpm_value = can_uds_get_processed_current_data(rpm_data);
+	can_obd_current_data_t* rpm_data = can_obd_get_current_data_by_name("Engine RPM");
+	float rpm_value = can_obd_get_processed_current_data(rpm_data);
 
 	/* Figure out how many lights to light up. */
 	float frac = rpm_value / PRV_SHIFT_POINT_RPM;

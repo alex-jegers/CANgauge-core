@@ -7,7 +7,7 @@ extern "C" {
 #endif
 
 /**********     INCLUDES        **********/
-#include "can_uds_def.h"
+#include <system/can/can_obd_def.h>
 #include "stdbool.h"
 #include "stdint.h"
 /**********     DEFINES      **********/
@@ -21,12 +21,12 @@ extern "C" {
  * desc:
  * 
  */
-bool can_uds_run();
-bool can_uds_stop(uint32_t block_time_ms);
-uint32_t can_uds_get_raw_current_data(uint8_t pid, uint8_t first_byte, uint8_t num_params);
-uint32_t can_uds_get_raw_infotype_data(uint8_t pid, uint8_t first_byte, uint8_t num_params);
+bool can_obd_run();
+bool can_obd_stop(uint32_t block_time_ms);
+uint32_t can_obd_get_raw_current_data(uint8_t pid, uint8_t first_byte, uint8_t num_params);
+uint32_t can_obd_get_raw_infotype_data(uint8_t pid, uint8_t first_byte, uint8_t num_params);
 bool app_can_sniffer_running();			//Delete??
-bool can_uds_is_init(uint32_t block_time_ms);
+bool can_obd_is_init(uint32_t block_time_ms);
 
 /**
  * @brief Will return zero if there is no UDS on CAN found (i.e. no response
@@ -34,7 +34,7 @@ bool can_uds_is_init(uint32_t block_time_ms);
  * used to query the OBD.
  * @returns See brief.
  */
-uint32_t can_uds_get_query_can_id();
+uint32_t can_obd_get_query_can_id();
 
 /**
  * @brief //Will return zero if there is no UDS on CAN found (i.e. no response
@@ -42,12 +42,12 @@ uint32_t can_uds_get_query_can_id();
  * received from the ECU.
  * @returns See brief.
  */
-uint32_t can_uds_get_response_can_id();
-void can_uds_stop_query();					//Stops all the queries for current data being sent on the bus.
-void can_uds_change_pressure_units(const char* units);
-void can_uds_change_temperature_units(const char* units);
-void can_uds_change_speed_units(const char* units);
-void can_uds_change_torque_units(const char* units);
+uint32_t can_obd_get_response_can_id();
+void can_obd_stop_query();					//Stops all the queries for current data being sent on the bus.
+void can_obd_change_pressure_units(const char* units);
+void can_obd_change_temperature_units(const char* units);
+void can_obd_change_speed_units(const char* units);
+void can_obd_change_torque_units(const char* units);
 
 
 #ifdef __cplusplus

@@ -63,7 +63,7 @@ extern "C" {
  * For control of the CAN bus.
  */
 #include "system/can/can_transmitter.h"
-#include "system/can/can_uds.h"
+#include <system/can/can_obd.h>
 
 /**
  * Hardware level drivers. Should depend on nothing except the STM32H7 and
