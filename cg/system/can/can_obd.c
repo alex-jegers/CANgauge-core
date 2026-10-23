@@ -85,9 +85,21 @@ static void prv_task_can_obd(void* canbus)
 	/* Zero out the CAN data array, this is where incoming raw data is stored. */
 	memset(prv_current_data, 0x00, 1760);
 
+	/* According to ISO 15765 CAN baud rate can be 500kbps or 250kbps
+	 * so we do a quick check to see if there's bus traffic and determine
+	 * the baud rate from that. If there's not bus traffic this will return
+	 * CAN_BAUD_ERROR and we can assume a CAN gateway is used therefore it's
+	 * a newer car and 500kbps is acceptable.
+	 */
+	can_baud_rate_t baud_rate = can_get_baud_rate(canbus);
+	if (baud_rate == CAN_BAUD_ERROR)
+	{
+		baud_rate = CAN_BAUD_500K;
+	}
+
 	/* Turn on the CAN peripheral and set the baud rate. */
 	can_init(canbus);
-	can_set_baud_rate(canbus, CAN_BAUD_500K);
+	can_set_baud_rate(canbus, baud_rate);
 	can_run(canbus);
 
 	/* Start the CAN transmitter task. */
