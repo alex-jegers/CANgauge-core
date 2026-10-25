@@ -9,7 +9,7 @@
 #define PRV_START_DEGREES		210.0
 #define PRV_DIST_FROM_CENTER	190.0
 #define PRV_LED_SIZE			45
-#define PRV_SHIFT_POINT_RPM		6000
+#define PRV_SHIFT_POINT_RPM		4000
 
 /**********		STATIC VARIABLES		**********/
 static lv_obj_t* prv_leds[PRV_NUM_LEDS];	//An array of LEDs, at a quantity defined by a constant.
@@ -177,7 +177,7 @@ void shift_light_example_run()
 	else	//Turn all the LEDs red and blink them 4 times a second.
 	{
 		static uint32_t last_time = 0;
-		uint32_t current_time = xTaskGetTickCount();	//Get time in ms.
+		uint32_t current_time = pdTICKS_TO_MS(xTaskGetTickCount());	//Get time in ms.
 		if (current_time - last_time >= 125)
 		{
 			lv_port_take_lvgl_mutex(portMAX_DELAY);
