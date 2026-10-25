@@ -17,9 +17,18 @@ extern "C" {
 
 /**********		GLOBAL FUNCTION DECLRATIONS		**********/
 /**
- * app_can_controller_run:
- * desc:
- * 
+ * @brief: can_obd_run starts a FreeRTOS task internally, the task function named prv_task_can_obd.
+ * This task first intializes the low level CAN driver for FDCAN1, sets the baud rate to 500kbps,
+ * initializes the CAN transmitter task. It sets up the RX filter to accept SAEJ1979 messages into
+ * FIFO1. Next it attempts to communicate with the car over the ISO 15765 network and determine
+ * which CAN ID the car uses. If it doesn't respond to either ID it will set the ID to 0 and set the
+ * task to be deleted. Before deleting itself it sets the event bit for initialization complete.
+ * If it does find a valid ISO 15675 CAN ID it will wait for a CAN frame to be received into FIFO1.
+ * When a CAN frame is received into FIFO1 it will process it and store the raw data. The raw data
+ * can be retrieved with can_obd_get_raw_ current_data/infotype_data and processed with
+ * can_obd_get_processed_current_data.
+ * @returns True if the FreeRTOS task was successfully created or already running. False if the FreeRTOS
+ * task could not be created (i.e. out of memory).
  */
 bool can_obd_run();
 bool can_obd_stop(uint32_t block_time_ms);
