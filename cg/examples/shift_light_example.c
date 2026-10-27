@@ -16,8 +16,28 @@ static lv_obj_t* prv_leds[PRV_NUM_LEDS];	//An array of LEDs, at a quantity defin
 static lv_obj_t* prv_rpm_lbl;				//A label to display the RPM.
 
 /**********		STATIC FUNCTION DECLRATIONS		**********/
+/**
+ * @brief This function is used to set the color of a LED. It checks to make
+ * sure that an index outside of the size of prv_leds[] is not being accessed
+ * and then handles the LVGL mutex while changing the color.
+ * @param led_index Which LEDs color to change. Going clockwise with increasing number.
+ * @param color Color to change the LED to - use lv_color_hex(<color hex code here>).
+ */
 static void prv_set_led_color(uint8_t led_index, lv_color_t color);
+
+/**
+ * @brief This function is used to set the brightness of the LED. It checks to make
+ * sure that an index outside of the size of prv_leds[] is not being accessed and
+ * then handles the LVGL mutex while changing the brightness.
+ * @param led_index Which LEDs color to change. Going clockwise with increasing number.
+ * @param brightness Value is clamped between 80 and 255.
+ */
 static void prv_set_led_brightness(uint8_t led_index, uint8_t brightness);
+
+/**
+ * @brief Sets the default colors of the LEDs. Edit the contents of this function to
+ * change the LED colors.
+ */
 static void prv_set_led_default_colors() ;
 
 /**********		STATIC FUNCTION DEFINITIONS		**********/
@@ -39,7 +59,7 @@ static void prv_set_led_brightness(uint8_t led_index, uint8_t brightness)
 
 static void prv_set_led_default_colors()
 {
-	/* Set the colors of the LEDs. Be careful not to exceed the number of PRV_NUM_LEDS. */
+	/* Set the colors of the LEDs. */
 	prv_set_led_color(0, UI_COLOR_BLUE);
 	prv_set_led_color(1, UI_COLOR_BLUE);
 	prv_set_led_color(2, UI_COLOR_BLUE);
@@ -49,18 +69,20 @@ static void prv_set_led_default_colors()
 	prv_set_led_color(6, UI_COLOR_RED);
 	prv_set_led_color(7, UI_COLOR_RED);
 	prv_set_led_color(8, UI_COLOR_RED);
+	//prv_set_led_color(9, UI_COLOR_RED);
+	//prv_set_led_color(10, UI_COLOR_RED);
 }
 
 /**********		GLOBAL FUNCTION DEFINITIONS		**********/
 void shift_light_example_init()
 {
 	/* Create the LVGL parent object. */
-	lv_port_take_lvgl_mutex(portMAX_DELAY);
-	lv_obj_t* prv_main_scr = lv_obj_create(NULL);
-	lv_obj_set_size(prv_main_scr, 480, 480);
-	lv_obj_set_style_bg_color(prv_main_scr, UI_COLOR_BLACK, 0);
-	lv_obj_remove_flag(prv_main_scr, LV_OBJ_FLAG_SCROLLABLE);
-	lv_obj_set_scrollbar_mode(prv_main_scr, LV_SCROLLBAR_MODE_OFF);
+	lv_port_take_lvgl_mutex(portMAX_DELAY);			//IMPORTANT: Take the LVGL mutex before calling LVGL functions.
+	lv_obj_t* prv_main_scr = lv_obj_create(NULL);	//Create the parent object.
+	lv_obj_set_size(prv_main_scr, 480, 480);		//Make it the same size as the physical screen.
+	lv_obj_set_style_bg_color(prv_main_scr, UI_COLOR_BLACK, 0);	//Make it a black background.
+	lv_obj_remove_flag(prv_main_scr, LV_OBJ_FLAG_SCROLLABLE);	//Nothing is outside the bound of the screen so make it un-scrollable.
+	lv_obj_set_scrollbar_mode(prv_main_scr, LV_SCROLLBAR_MODE_OFF);	//It cant be scrolled so get rid of the scrollbars.
 
 	/* Create and evenly space the LEDs based on how many are defined in PRV_NUM_LIGHT. */
 	const float angle_increment_deg = PRV_SPAN_DEGREES / (float)(PRV_NUM_LEDS - 1);
@@ -92,6 +114,10 @@ void shift_light_example_init()
 	/* Load the screen we just created. */
 	lv_screen_load(prv_main_scr);
 
+	/**
+	 * IMPORTANT:
+	 * Give the mutex back now that we're done calling functions that start with "lv_"
+	 */
 	lv_port_give_lvgl_mutex();
 
 	/* Set the colors of the LEDs. */
