@@ -6,6 +6,7 @@
 
 #ifndef LV_CONF_INTERNAL_H
 #define LV_CONF_INTERNAL_H
+
 /* clang-format off */
 
 /* Config options */
@@ -67,7 +68,7 @@
     #ifdef LV_CONF_PATH                           /* If there is a path defined for lv_conf.h, use it */
         #include LV_CONF_PATH                     /* Note: Make sure to define custom CONF_PATH as a string */
     #elif defined(LV_CONF_INCLUDE_SIMPLE)         /* Or simply include lv_conf.h is enabled. */
-        #include "lv_conf.h"
+        #include "../../config/lv_conf.h"
     #else
         #include "../../lv_conf.h"                /* Else assume lv_conf.h is next to the lvgl folder. */
     #endif
