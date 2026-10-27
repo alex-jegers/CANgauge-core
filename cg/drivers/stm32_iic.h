@@ -46,19 +46,29 @@ void i2c_disable_clk_stretch(I2C_TypeDef* i2c);
 void i2c_enable_timeout_detection(I2C_TypeDef* i2c);
 
 /**
- * i2c_read:
- * 		desc: read data from an I2C device.
- * 		params:
- * 		returns: 0 for success, non-zero for an error.
+ * @brief Read data from an I2C device.
+ * @param i2c Which I2C port (use I2C4 for CANgauge).
+ * @param slave_addr The device address of the targeted slave.
+ * @param internal_addr The address internal to the slave to read from.
+ * @param internal_addr_type Either 8 bit or 16 bit. Use I2C_INTERNAL_ADDR_8_BIT or I2C_INTERNAL_ADDR_16_BIT
+ * @param data A pointer to a uint8_t array to read the data into.
+ * @param num_bytes The number of bytes to read into "data".
+ * @param auto_stop Whether or not to send a stop bit after sending the internal addr. True to send a stop, false to stretch the clock.
+ * @return Returns type i2c_exit_code_t. I2C_EXIT_CODE_TC for transfer complete.
  */
 i2c_exit_code_t i2c_read(I2C_TypeDef* i2c, uint8_t slave_addr, uint16_t internal_addr, i2c_internal_addr_t internal_addr_type,
 					uint8_t* data, uint8_t num_bytes, bool auto_stop);
 
 /**
- * i2c_write:
- * 		desc: write to I2C device.
- * 		params:
- * 		returns: 0 for success, non-zero for an error.
+ * @brief Write data to an I2C device.
+ * @param i2c Which I2C port (use I2C4 for CANgauge).
+ * @param slave_addr The device address of the targeted slave.
+ * @param internal_addr The address internal to the slave to read from.
+ * @param internal_addr_type Either 8 bit or 16 bit. Use I2C_INTERNAL_ADDR_8_BIT or I2C_INTERNAL_ADDR_16_BIT
+ * @param data A pointer to a uint8_t array containing the data to write.
+ * @param num_bytes The number of bytes to write from "data".
+ * @param auto_stop Whether or not to stretch the clock after num_bytes are transfered. True = send a stop bit. False = stretch the clock.
+ * @return Returns type i2c_exit_code_t. I2C_EXIT_CODE_TC for transfer complete.
  */
 i2c_exit_code_t i2c_write(I2C_TypeDef* i2c, uint8_t slave_addr, uint16_t internal_addr, i2c_internal_addr_t internal_addr_type,
 					uint8_t* data, uint8_t num_bytes, bool auto_stop);
