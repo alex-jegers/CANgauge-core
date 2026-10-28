@@ -124,9 +124,29 @@ void io_set_output_speed(GPIO_TypeDef* port, uint32_t mask, io_output_speed_t gp
 void io_set_output_type(GPIO_TypeDef* port, uint32_t mask, io_output_type_t io_output_type);
 uint32_t io_read_port(GPIO_TypeDef* port);
 bool io_read_pin(GPIO_TypeDef* port, uint32_t pin_mask);
+
+/**
+ * @brief Sets the IO port/pin defined by test_led_port/test_led_msk as an output.
+ * The port/pin is automatically set to GPIOB Pin 15 unless changed internally in stm32_io.c.
+ */
 void io_init_test_led(GPIO_TypeDef* port, uint32_t mask);
+
+/**
+ * @brief Turns on the LED connected to the IO port/pin defined by test_led_port/test_led_msk.
+ * The port/pin is automatically set to GPIOB Pin 15 unless changed internally in stm32_io.c.
+ */
 void io_test_led_on();
+
+/**
+ * @brief Turns off the LED connected to the IO port/pin defined by test_led_port/test_led_msk.
+ * The port/pin is automatically set to GPIOB Pin 15 unless changed internally in stm32_io.c.
+ */
 void io_test_led_off();
+
+/**
+ * @brief Toggles the LED connected to the IO port/pin defined by test_led_port/test_led_msk.
+ * The port/pin is automatically set to GPIOB Pin 15 unless changed internally in stm32_io.c.
+ */
 void io_test_led_tgl();
 
 
