@@ -17,6 +17,7 @@ extern "C" {
 #if EXAMPLES_BUILD_EXAMPLES
 
 #include "shift_light_example.h"
+#include "example_basic_can.h"
 
 #endif //EXAMPLES_BUILD_EXAMPLES
 
