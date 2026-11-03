@@ -149,6 +149,7 @@ void rcc_enable_csi();
  */
 void rcc_select_per_ck(per_ck_src_t ck);
 void rcc_c2_clock_config();
+void rcc_init_pll();
 
 /**
  * @brief Sets the initial, overall multiplier and the dividers for the PLL1 
@@ -157,7 +158,7 @@ void rcc_c2_clock_config();
  *      The output frequency of the VCO (input freq. * mult) needs to be in
  *      compliance with PLLxVCOSEL setting (assumes PLLxVCOSEL is 0). 
  *      PLL needs to be disabled.
- *      Assumes an 8MHz input.
+ *      Assumes an 8MHz input. Input frequency is determined by rcc_init_pll.
  *      The function will return 0 if anything not allowed is attemped with 
  *      any of the passed params.
  *      NOTE THAT - PLL1R, div 1 is not allowed, min value of 2.

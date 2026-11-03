@@ -15,14 +15,10 @@
 /**********		STATIC VARIABLES		**********/
 
 /**********		STATIC FUNCTION DECLRATIONS		**********/
-static void rcc_init_pll();
-static void rcc_init_pll1();		//480MHz
-static void rcc_init_pll2();		//
-static void rcc_init_pll3();		//
 static int8_t prv_config_pll(uint32_t* rcc_pll, uint16_t mult, uint8_t div_p, uint8_t div_q, uint8_t div_r);
 
 /**********		STATIC FUNCTION DEFINITIONS		**********/
-static void rcc_init_pll()
+void rcc_init_pll()
 {
 	/*Set the PLL1 CLK source to the HSI and divide by 1 so PLL in = 8MHz.*/
 	RCC->PLLCKSELR = RCC_PLLCKSELR_PLLSRC_HSI;
@@ -31,54 +27,6 @@ static void rcc_init_pll()
 	RCC->PLLCFGR |= RCC_PLLCFGR_PLL1RGE_3
 				| RCC_PLLCFGR_PLL2RGE_3
 				| RCC_PLLCFGR_PLL3RGE_3;
-}
-
-static void rcc_init_pll1()
-{
-	/*Set the initial divider to 1.*/
-	RCC->PLLCKSELR |= 1 << RCC_PLLCKSELR_DIVM1_Pos;
-
-	/*Multiply by 59 + 1, so this gives 8 * 60  = 480.*/
-	RCC->PLL1DIVR = (59 << RCC_PLL1DIVR_N1_Pos) 	//Mult 60..
-				| (1 << RCC_PLL1DIVR_R1_Pos)		//Div 2,	R = 240MHz
-				| (0 << RCC_PLL1DIVR_Q1_Pos)		//No Div,	Q = 480MHz
-				| (0 << RCC_PLL1DIVR_P1_Pos);		//No div,	P = 480MHz
-
-	/*Enable PLL1.*/
-	RCC->CR |= RCC_CR_PLL1ON; while ((RCC->CR & RCC_CR_PLL1RDY) == 0){}
-}
-
-static void rcc_init_pll2()
-{
-	/*Set the initial divider to 1.*/
-	RCC->PLLCKSELR |= 1 << RCC_PLLCKSELR_DIVM2_Pos;
-
-	/*Multiply by 32 + 1, so this gives 8 * 33  = 264.*/
-	RCC->PLL2DIVR = (32 << RCC_PLL2DIVR_N2_Pos) 	//Mult 33..
-				| (0 << RCC_PLL2DIVR_R2_Pos)		//No div,	R = 264MHz
-				| (0 << RCC_PLL2DIVR_Q2_Pos)		//No Div,	Q = 264MHz
-				| (6 << RCC_PLL2DIVR_P2_Pos);		//Div 7,	P = 37.714MHz
-
-	/*Enable PLL1.*/
-	RCC->CR |= RCC_CR_PLL2ON;
-	while ((RCC->CR & RCC_CR_PLL2RDY) == 0){}
-}
-
-static void rcc_init_pll3()
-{
-	/*Set the initial divider to 1.*/
-	RCC->PLLCKSELR |= 1 << RCC_PLLCKSELR_DIVM3_Pos;
-
-	/*Set up the dividers.*/
-	RCC->PLL3DIVR = (26 << RCC_PLL3DIVR_N3_Pos)		//Mult 27...
-				| (8 << RCC_PLL3DIVR_R3_Pos)		//Div 9,	R = 12MHz
-				| (17 << RCC_PLL3DIVR_Q3_Pos)		//Div 18,	Q = 12MHz
-				| (0 << RCC_PLL3DIVR_P3_Pos);		//No div, 	P = 216MHz
-
-	/*Enable PLL3.*/
-	RCC->CR |= RCC_CR_PLL3ON;
-	while ((RCC->CR & RCC_CR_PLL3RDY) == 0) {}
-
 }
 
 static int8_t prv_config_pll(uint32_t* rcc_pll, uint16_t mult, uint8_t div_p, uint8_t div_q, uint8_t div_r)
