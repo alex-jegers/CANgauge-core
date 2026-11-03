@@ -9,7 +9,7 @@
 /**********		DEFINES		**********/
 #define EVENT_BITS_TASK_STOPPED     0x1 << 0
 #define CAN_TX_NUM_HIGH_PRI_MSGS	3
-#define CAN_TX_NUM_MSGS				(32 - CAN_TX_NUM_HIGH_PRI_MSGS)
+#define CAN_TX_NUM_MSGS				(CAN1_TX_BUFFER_ELEMENTS - CAN_TX_NUM_HIGH_PRI_MSGS)
 
 /**********		EXTERNAL VARIABLE DEFINITIONS		**********/
 
@@ -22,14 +22,18 @@ static can_transmit_handle_t prv_handles[32 - CAN_TX_NUM_HIGH_PRI_MSGS];
 static can_transmit_handle_t prv_high_pri_handles[CAN_TX_NUM_HIGH_PRI_MSGS];
 static uint32_t prv_min_time_between_msg_ms = 0;
 
+/**
+ * @brief Protects the create msg functions in case two tasks try to
+ * create a message at the same time they cant end up with the same one.
+ */
 static SemaphoreHandle_t prv_create_msg_mutex = NULL;
 
 /**********		STATIC FUNCTION DECLRATIONS		**********/
-static void prv_task_can_transmit();
+static void prv_task_can_transmit(void* canbus);
 static void prv_delete_handle(can_transmit_handle_t* hndl);
 
 /**********		STATIC FUNCTION DEFINITIONS		**********/
-static void prv_task_can_transmit()
+static void prv_task_can_transmit(void* canbus)
 {
     static uint32_t current_time_ms = 0;
     static uint32_t time_till_next = pdMS_TO_TICKS(500);
@@ -43,7 +47,7 @@ static void prv_task_can_transmit()
         {
         	if (prv_high_pri_handles[x].active == true)
         	{
-        		can_tx(FDCAN1, 32 - CAN_TX_NUM_HIGH_PRI_MSGS + x);
+        		can_tx(canbus, 32 - CAN_TX_NUM_HIGH_PRI_MSGS + x);
         		xTaskDelayUntil(&current_time_ms, pdMS_TO_TICKS(prv_min_time_between_msg_ms));
         		prv_delete_handle(&prv_high_pri_handles[x]);
         		current_time_ms = xTaskGetTickCount();
@@ -68,7 +72,7 @@ static void prv_task_can_transmit()
             /* If the period is one shot, send it then delete it. Delay for the min time between messages. */
             if (prv_handles[i].period_ms == CAN_TRANSMIT_PERIOD_ONE_SHOT)
             {
-                can_tx(FDCAN1, i);
+                can_tx(canbus, i);
                 prv_delete_handle(&prv_handles[i]);
                 time_till_next = prv_min_time_between_msg_ms;
                 restart_position = i;
@@ -80,7 +84,7 @@ static void prv_task_can_transmit()
             if (time_since_last >= prv_handles[i].period_ms)
             {
                 /* Transmit the message. */
-                can_tx(FDCAN1, i);
+                can_tx(canbus, i);
 
                 /* Reset the last time sent. */
                 prv_handles[i].last_time_sent = current_time_ms;
@@ -133,7 +137,7 @@ static void prv_delete_handle(can_transmit_handle_t* hndl)
 }
 
 /**********		GLOBAL FUNCTION DEFINITIONS		**********/
-BaseType_t can_transmit_run(FDCAN_GlobalTypeDef* can, uint32_t min_time_between_msg_ms)
+bool can_transmit_run(FDCAN_GlobalTypeDef* can, uint32_t min_time_between_msg_ms)
 {
 	/* Check if the task already exists and do nothing if it does. */
 	if (prv_task_handle != NULL)
@@ -145,7 +149,15 @@ BaseType_t can_transmit_run(FDCAN_GlobalTypeDef* can, uint32_t min_time_between_
     prv_event_group = xEventGroupCreate();
     xEventGroupClearBits(prv_event_group, EVENT_BITS_TASK_STOPPED);
     prv_task_run = true;
-    return xTaskCreate(prv_task_can_transmit, "CAN_TRANSMIT", 900 / 4, NULL, 3, &prv_task_handle);
+    BaseType_t val = xTaskCreate(prv_task_can_transmit, "CAN_TRANSMIT", 900 / 4, can, 3, &prv_task_handle);
+    if (val == pdPASS)
+    {
+    	return true;
+    }
+    else
+    {
+    	return false;
+    }
 }
 
 bool can_transmit_stop(uint32_t block_time_ms)
@@ -241,7 +253,7 @@ bool can_transmit_set_msg_data(can_transmit_handle_t* hndl, can_tx_buffer_entry_
     /* Shift the ID over 18 bits if it's a std length ID. */
     if (hndl->buf->T0.bit.XTD == CAN_ID_STD)
     {
-        hndl->buf->T0.bit.ID = hndl->buf->T0.bit.ID << 18;
+        hndl->buf->T0.bit.ID = hndl->buf->T0.bit.ID;
     }
 
     return true;
