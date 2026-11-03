@@ -563,6 +563,7 @@ bool can_check_for_rx_fifo1(FDCAN_GlobalTypeDef* canbus)
 uint8_t can_read_from_fifo1(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* message)
 {
 	uint8_t get_index = (canbus->RXF1S & FDCAN_RXF1S_F1GI) >> FDCAN_RXF1S_F1GI_Pos;		//TODO: Function to clean this up.
+	uint32_t dest_addr;
 	if (canbus == FDCAN1)
 	{
 		dest_addr = (uint32_t)((uint8_t*)CAN1_RX_FIFO1_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
