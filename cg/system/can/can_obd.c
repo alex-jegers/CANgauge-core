@@ -98,7 +98,7 @@ static void prv_task_can_obd(void* canbus)
 	}
 
 	/* Turn on the CAN peripheral and set the baud rate. */
-	can_init(canbus);
+	can_init();
 	can_set_baud_rate(canbus, baud_rate);
 	can_run(canbus);
 
