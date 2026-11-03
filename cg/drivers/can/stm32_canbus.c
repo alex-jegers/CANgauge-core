@@ -279,8 +279,11 @@ void can_stop(FDCAN_GlobalTypeDef* canbus)
 
 void can_run(FDCAN_GlobalTypeDef* canbus)
 {
-	/*Reset the CCE and INIT bits to start CAN operation.*/
+	/* Check if CAN 1 is already running so we dont turn it off later. */
+	bool can1_running = false;
+	if (!(FDCAN1->CCCR & FDCAN_CCCR_INIT)) { can1_running = true; }
 
+	/*Reset the CCE and INIT bits to start CAN operation.*/
 	if (canbus == FDCAN2)
 	{
 		can_set_listen_only(FDCAN1);
@@ -293,7 +296,7 @@ void can_run(FDCAN_GlobalTypeDef* canbus)
 	canbus->CCCR &= ~FDCAN_CCCR_INIT;					//Clear the init bit.
 	while ((canbus->CCCR & FDCAN_CCCR_INIT) != 0) {}	//Wait for init to be clear.
 
-	if (canbus == FDCAN2)
+	if ((canbus == FDCAN2) && (can1_running == false))
 	{
 		can_stop(FDCAN1);
 	}
@@ -448,7 +451,7 @@ void can_enable_rx_rf0n_interrupt(FDCAN_GlobalTypeDef* canbus)
 		canbus->IE |= 1 << FDCAN_IE_RF0NE_Pos;		//New message received in FIFO 0 enable interrupt.
 		canbus->ILE |= 1 << FDCAN_ILE_EINT0_Pos;	//Enable interrupt line.
 		NVIC_EnableIRQ(FDCAN2_IT0_IRQn);			//Enable CAN2 IRQ.
-		NVIC_SetPriority(FDCAN2_IT0_IRQn, 1);
+		NVIC_SetPriority(FDCAN2_IT0_IRQn, 0xf);
 	}
 }
 
@@ -533,7 +536,19 @@ bool can_check_for_rx_fifo0(FDCAN_GlobalTypeDef* canbus)
 uint8_t can_read_from_fifo0(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* message)
 {
 	uint8_t get_index = (canbus->RXF0S & FDCAN_RXF0S_F0GI) >> FDCAN_RXF0S_F0GI_Pos;		//TODO: Function to clean this up.
-	uint32_t dest_addr = (uint32_t)((uint8_t*)CAN1_RX_FIFO0_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	uint32_t dest_addr;
+	if (canbus == FDCAN1)
+	{
+		dest_addr = (uint32_t)((uint8_t*)CAN1_RX_FIFO0_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	}
+	else if (canbus == FDCAN2)
+	{
+		dest_addr = (uint32_t)((uint8_t*)CAN2_RX_FIFO0_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	}
+	else
+	{
+		return 0;
+	}
 	memcpy(message, (void*)dest_addr, sizeof(can_rx_buffer_entry_t));
 	canbus->RXF0A = get_index;
 	uint32_t fill_level = (canbus->RXF0S & FDCAN_RXF0S_F0FL) >> FDCAN_RXF0S_F0FL_Pos;
@@ -548,7 +563,19 @@ bool can_check_for_rx_fifo1(FDCAN_GlobalTypeDef* canbus)
 uint8_t can_read_from_fifo1(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* message)
 {
 	uint8_t get_index = (canbus->RXF1S & FDCAN_RXF1S_F1GI) >> FDCAN_RXF1S_F1GI_Pos;		//TODO: Function to clean this up.
-	uint32_t dest_addr = (uint32_t)((uint8_t*)CAN1_RX_FIFO1_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	if (canbus == FDCAN1)
+	{
+		dest_addr = (uint32_t)((uint8_t*)CAN1_RX_FIFO1_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	}
+	else if (canbus == FDCAN2)
+	{
+		dest_addr = (uint32_t)((uint8_t*)CAN2_RX_FIFO1_ADDR + (get_index * sizeof(can_rx_buffer_entry_t)));
+	}
+	else
+	{
+		return 0;
+	}
+
 	memcpy(message, (void*)dest_addr, sizeof(can_rx_buffer_entry_t));
 	canbus->RXF1A = get_index;
 	uint32_t fill_level = (canbus->RXF1S & FDCAN_RXF1S_F1FL) >> FDCAN_RXF1S_F1FL_Pos;
@@ -565,6 +592,18 @@ uint32_t can_get_can_id(can_rx_buffer_entry_t* message)
 	{
 		return message->R0.bit.ID;
 	}
+}
+
+uint32_t can_get_dlc(can_rx_buffer_entry_t* message)
+{
+	return message->R1.bit.DLC;
+}
+
+uint32_t can_get_data(can_rx_buffer_entry_t* message, uint8_t* data)
+{
+	uint32_t dlc = can_get_dlc(message);
+	memcpy(data, message->data, dlc);
+	return dlc;
 }
 
 void can_set_can_id(can_tx_buffer_entry_t* message, uint32_t can_id, can_id_t id_type)
@@ -652,6 +691,41 @@ void FDCAN1_IT0_IRQHandler()
 		if (can1_rx_rf0f_ir_cb)
 		{
 			can1_rx_rf0f_ir_cb();
+		}
+	}
+}
+
+void FDCAN2_IT0_IRQHandler()
+{
+	uint32_t ir = FDCAN2->IR;		//Save the state of the interrupt register.
+	FDCAN2->IR = 0xFFFFFFFF;		//Clear all the interrupts.
+
+	if (ir & FDCAN_IR_TC)			//Transfer complete.
+	{
+
+	}
+
+	if (ir & FDCAN_IR_RF0N)			//New RX in FIFO0.
+	{
+		if (can2_rx_rf0n_ir_cb)
+		{
+			can2_rx_rf0n_ir_cb();
+		}
+	}
+
+	if (ir & FDCAN_IR_RF1N)			//New RX in FIFO1.
+	{
+		if (can2_rx_rf1n_ir_cb)
+		{
+			can2_rx_rf1n_ir_cb();
+		}
+	}
+
+	if (ir & FDCAN_IR_RF0F)			//FIFO0 full.
+	{
+		if (can2_rx_rf0f_ir_cb)
+		{
+			can2_rx_rf0f_ir_cb();
 		}
 	}
 }

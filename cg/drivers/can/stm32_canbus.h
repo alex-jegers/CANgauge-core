@@ -1,8 +1,14 @@
-/*
- * stm32_canbus.h
- *
- *  Created on: Mar 9, 2024
- *      Author: awjpp
+/**
+ * @file stm32_canbus.h
+ * @brief Low level driver for control of the CAN peripherals (FDCAN1 and FDCAN2).
+ * If you dont know the baud rate of the CAN bus you can call can_get_baud_rate
+ * prior to initialization, if there is bus traffic this will return the baud rate.
+ * If you know the baud rate you want to set you can skip that step and call
+ * can_init(), this does not have any params, it's the same for FDCAN1 and 2. can_init
+ * will wipe the message RAM so do not initialize any filters prior to this.
+ * Then set the baud rate with can_set_baud_rate passing the CAN port and baud rate
+ * as params. Then call can_run for the CAN port you wish to run. Filters and interrupts
+ * can be created anytime after can_init().
  */
 
 #ifndef SRC_DRIVERS_STM32_CANBUS_H_
@@ -41,11 +47,12 @@ void can_stop(FDCAN_GlobalTypeDef* canbus);
 
 /**
  * @brief Clears the INIT and CCE bits locking CAN registers.
- * @attention For some reason that I haven't been able to find in ST documentation
+ * @attention For some reason that, I haven't been able to find in ST documentation,
  * FDCAN1 needs to be initialized for FDCAN2 to work after it gets initialized.
- * After initializing FDCAN2, FDCAN1 can be uninitialized.
+ * After initializing FDCAN2, FDCAN1 can be uninitialized. This is handled inside
+ * the function so the caller need not worry about it.
  */
-void can_run();
+void can_run(FDCAN_GlobalTypeDef* canbus);
 
 /**
  * @brief Sets the values of the NBTP registers, assumes a 48MHz kernel clock.
@@ -122,6 +129,22 @@ uint8_t can_read_from_fifo1(FDCAN_GlobalTypeDef* canbus, can_rx_buffer_entry_t* 
  * @return The CAN ID of the message.
  */
 uint32_t can_get_can_id(can_rx_buffer_entry_t* message);
+
+/**
+ * @brief Returns the data length code from a received message.
+ */
+uint32_t can_get_dlc(can_rx_buffer_entry_t* message);
+
+/**
+ * @brief Copies the data from a received CAN frame into an array.
+ * You can check how many bytes will be copied by first calling
+ * can_get_dlc.
+ * @param message A can_rx_buffer_entry_t with valid data.
+ * @param data A pointer to an array of bytes that the data from message
+ * will be copied to.
+ * @returns The number of bytes copied into data.
+ */
+uint32_t can_get_data(can_rx_buffer_entry_t* message, uint8_t* data);
 
 /**
  * @brief Sets the data and data length code of a TX buffer.
