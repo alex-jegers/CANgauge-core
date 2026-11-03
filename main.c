@@ -10,16 +10,18 @@
 #include "demos/benchmark/lv_demo_benchmark.h"
 #include "demos/music/lv_demo_music.h"
 
+#define USER_APPLICATION_PRIORITY				1		//0 is low priority (idle task), 6 is max and generally reserved for critical tasks.
+#define USER_APPLICATION_STACK_DEPTH_BYTES		12000
+
 /**
  * @brief A task handle for application_task.
  */
 static TaskHandle_t application_task_handle = NULL;
 
 /**
- * @brief Example initialization function. Gets passed to system_set_ui_init_cb and
- * creates a FreeRTOS task with the application_task function.
+ * @brief This is a task function created in int main. User code can start in this function
+ * definition.
  */
-static void application_init();
 static void application_task(void* args);
 
 int main(void)
@@ -39,12 +41,14 @@ int main(void)
    	xTaskCreate(system_task_init, "SYS_INIT", 650, NULL, 5, NULL);
 
 
-	/**************************************************************************************
-	 * @attention A function pointer passed here will run during this initialization
-	 * task at max FreeRTOS priority. Use this to load UIs, start application tasks, etc.
-	 **************************************************************************************/
-	system_set_application_init_cb(application_init);
+	/**
+	 * A pointer to a void function with no params can be passed here to run at priority 6 as
+	 * soon as the scheduler starts. Useful if you are loading a UI and dont want to run a new task.
+	 */
+	system_set_application_init_cb(NULL);
 
+
+	xTaskCreate(application_task, "APP_TASK", USER_APPLICATION_STACK_DEPTH_BYTES / 4, NULL, USER_APPLICATION_PRIORITY, &application_task_handle);
 
 	/* Starts the FreeRTOS scheduler. */
 	vTaskStartScheduler();
@@ -53,25 +57,6 @@ int main(void)
    	while(1);
 }
 
-void application_init()
-{
-	/******************************************
-	 *** USER APPLICATION SYSTEM
-	 *** INITIALIZATION CODE GOES HERE.
-	 *** THIS WILL RUN AT MAX PRIORITY (6).
-	 ******************************************/
-
-	lv_demo_music();
-	//lv_demo_benchmark();
-
-
-	/******************************************
-	 *** USER APPLICATION INITIALIZATION	***
-	 *** CODE END.							***
-	 ******************************************/
-	const uint32_t application_task_stack_depth_bytes = 12000;
-	xTaskCreate(application_task, "APP_TASK", application_task_stack_depth_bytes / 4, NULL, 1, &application_task_handle);
-}
 
 void application_task(void* args)
 {
