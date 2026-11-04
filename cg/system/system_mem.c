@@ -29,7 +29,7 @@ FRESULT sys_mem_create_eeprom_fs()
 {
 	if (prv_fs_eeprom != NULL)
 	{
-		return -1;
+		free(prv_fs_eeprom);
 	}
 	FRESULT res;
 	const MKFS_PARM params_eeprom =
