@@ -14,12 +14,7 @@
 #if LV_USE_DRAW_SW
 
 #include "blend/lv_draw_sw_blend_private.h"
-#include "../../misc/lv_math.h"
 #include "../../misc/lv_text_ap.h"
-#include "../../core/lv_refr.h"
-#include "../../misc/lv_assert.h"
-#include "../../stdlib/lv_string.h"
-#include "../lv_draw_mask.h"
 
 /*********************
  *      DEFINES
@@ -65,7 +60,7 @@ void lv_draw_sw_border(lv_draw_task_t * t, const lv_draw_border_dsc_t * dsc, con
 
     /*Get the inner area*/
     lv_area_t area_inner;
-    lv_area_copy(&area_inner, coords);
+    area_inner = *coords;
     area_inner.x1 += ((dsc->side & LV_BORDER_SIDE_LEFT) ? dsc->width : - (dsc->width + rout));
     area_inner.x2 -= ((dsc->side & LV_BORDER_SIDE_RIGHT) ? dsc->width : - (dsc->width + rout));
     area_inner.y1 += ((dsc->side & LV_BORDER_SIDE_TOP) ? dsc->width : - (dsc->width + rout));
@@ -100,6 +95,11 @@ void draw_border_complex(lv_draw_task_t * t, const lv_area_t * outer_area, const
     lv_draw_sw_blend_dsc_t blend_dsc;
     lv_memzero(&blend_dsc, sizeof(blend_dsc));
     lv_opa_t * mask_buf = lv_malloc(draw_area_w);
+    LV_ASSERT_MALLOC(mask_buf);
+    if(!mask_buf) {
+        LV_LOG_WARN("Failed to allocate memory for mask buffer");
+        return;
+    }
     blend_dsc.mask_buf = mask_buf;
 
     void * mask_list[3] = {0};

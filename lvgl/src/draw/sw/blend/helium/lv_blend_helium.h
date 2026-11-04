@@ -15,11 +15,11 @@ extern "C" {
  *********************/
 
 #if defined(_RTE_)
-#include "Pre_Include_Global.h"
-#include "lv_conf_cmsis.h"
+#include <Pre_Include_Global.h>
+#include <lv_conf_cmsis.h>
 #endif
 
-#include "../../../../lv_conf_internal.h"
+#include "../../../../lvgl_public.h"
 
 /* detect whether helium is available based on arm compilers' standard */
 #if defined(__ARM_FEATURE_MVE) && __ARM_FEATURE_MVE
@@ -29,6 +29,8 @@ extern "C" {
 #endif
 
 #if !defined(__ASSEMBLY__)
+
+#include "../lv_draw_sw_blend_private.h"
 
 #if __GNUC__ >= 4
 #define LVGL_HIDDEN __attribute__((visibility("hidden")))

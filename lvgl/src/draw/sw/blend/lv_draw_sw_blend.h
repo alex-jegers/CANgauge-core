@@ -13,12 +13,10 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../lv_draw_sw_mask.h"
-#if LV_USE_DRAW_SW
 
-#include "../../../misc/lv_color.h"
-#include "../../../misc/lv_area.h"
-#include "../../../misc/lv_style.h"
+#include "../../../lvgl_public.h"
+
+#if LV_USE_DRAW_SW
 
 /*********************
  *      DEFINES
@@ -46,7 +44,7 @@ typedef struct {
 
 /**
  * Call the blend function of the `layer`.
- * @param draw_unit     pointer to a draw unit
+ * @param t             pointer to a draw unit
  * @param dsc           pointer to an initialized blend descriptor
  */
 void lv_draw_sw_blend(lv_draw_task_t * t, const lv_draw_sw_blend_dsc_t * dsc);
